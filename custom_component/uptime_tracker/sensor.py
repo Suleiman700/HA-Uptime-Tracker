@@ -21,6 +21,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     sensors = [
         LastOfflineDurationSensor(hass, name),
         LastOnlineSensor(hass, name),
+        LastOfflineTimeSensor(hass, name),
     ]
 
     async_add_entities(sensors, update_before_add=True)
@@ -68,9 +69,27 @@ class LastOfflineDurationSensor(UptimeTrackerSensor):
 
 class LastOnlineSensor(UptimeTrackerSensor):
     def __init__(self, hass, name):
-        super().__init__(hass, name, 'Last Online')
+        super().__init__(hass, name, 'Last Online Time')
 
     def _update_state(self):
         self._state = datetime.now().isoformat()
-        self._hass.states.async_set('sensor.uptime_tracker_last_online', self._state, {"friendly_name": "Last Online"})
+        self._hass.states.async_set('sensor.uptime_tracker_last_online', self._state, {"friendly_name": "Last Online Time"})
         _LOGGER.debug(f"{self._name} state updated to: {self._state}")
+
+class LastOfflineTimeSensor(UptimeTrackerSensor):
+    def __init__(self, hass, name):
+        super().__init__(hass, name, 'Last Offline Time')
+
+    def _update_state(self):
+        last_offline_state = self._hass.states.get('sensor.uptime_tracker_last_offline_time')
+        if last_offline_state and last_offline_state.state:
+            self._state = last_offline_state.state
+        else:
+            self._state = None
+        _LOGGER.debug(f"{self._name} state updated to: {self._state}")
+
+    async def async_added_to_hass(self):
+        # Set initial state when sensor is added to Home Assistant
+        self._state = datetime.now().isoformat()
+        self._hass.states.async_set('sensor.uptime_tracker_last_offline_time', self._state, {"friendly_name": "Last Offline Time"})
+        _LOGGER.debug(f"{self._name} state initialized to: {self._state}")
