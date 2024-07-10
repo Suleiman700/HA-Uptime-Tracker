@@ -3,10 +3,11 @@
 
 ## Overview
 
-The Uptime Tracker custom component for Home Assistant provides sensors that monitor the duration of server offline periods. It includes two sensors:
+The Uptime Tracker custom component for Home Assistant provides sensors that monitor the duration of server offline periods. It includes three sensors:
 
-1. `Last Offline`: Shows the exact date and time when the server went offline.
-2. `Last Offline Duration`: Displays the duration in seconds since the server last went offline.
+1. `Last Offline Time`: Shows the exact date and time when the server went offline.
+2. `Last Offline Duration`: Displays the duration in seconds since the server last went offline & came online.
+3. `Last Online Time`: Shows the exact date and time when the server is online.
 
 ![img.png](img.png)
 
@@ -47,13 +48,13 @@ The Uptime Tracker custom component for Home Assistant provides sensors that mon
 
 ## How It Works
 
-1. The component continuously updates the last online time whenever the server is operational.
-2. Upon the server returning online, the component calculates the duration of the outage by subtracting the last online time from the current time.
+1. The component continuously updates the `last online time` whenever the server is operational.
+2. When server goes offline and returns online, the component calculates the duration of the outage by subtracting the last online time from the current time.
 
 ---
 
 ## Example Scenario
-**Scenario**: The server goes offline and returns online after 60 seconds.
-
-- Last Offline: Shows "10 July 2024 at 22:53:05", the exact date and time when the server went offline.
-- Last Offline Duration: Displays "60 seconds", indicating the duration of the recent outage.
+1. Server is online, It keep logging the last online time.
+2. Server goes offline.
+3. Server goes back online.
+4. Server gets the last online time - the current time => offline duration in seconds
